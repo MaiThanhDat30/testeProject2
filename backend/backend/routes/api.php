@@ -3,12 +3,29 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Book;
 
 use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AdminController;
 
-Route::get('/books', [BookController::class, 'index']);        // Lấy danh sách sách
-Route::get('/books/{id}', [BookController::class, 'show']);   // Xem chi tiết sách
-Route::post('/books', [BookController::class, 'store']);      // Thêm sách
-Route::put('/books/{id}', [BookController::class, 'update']); // Sửa sách
-Route::delete('/books/{id}', [BookController::class, 'destroy']); // Xoá sách
+// Public routes
+
+Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
+
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register']);
+
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::post('/books', [BookController::class, 'store']);
+    Route::put('/books/{id}', [BookController::class, 'update']);
+    Route::delete('/books/{id}', [BookController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [UserController::class, 'profile']);
+    Route::post('/update-profile', [UserController::class, 'updateProfile']);
+    Route::post('/logout', [UserController::class, 'logout']);
+});
+
 // Route::post('/books', [BookController::class, 'store']);
 
 // Route::prefix('v1')->group(function () {

@@ -16,8 +16,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'avatar',
-        'subscription_level',
+        'role',
     ];
 
     protected $hidden = [
@@ -25,34 +24,39 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    // Relations
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
+    // protected $casts = [
+    //     'email_verified_at' => 'datetime',
+    // ];
+   public function setPasswordAttribute($value)
+{
+    if ($value) {
+        $this->attributes['password'] = bcrypt($value);
     }
+}
+    // // Relations
+    // public function orders()
+    // {
+    //     return $this->hasMany(Order::class);
+    // }
 
-    // Subscription level helper
-    public function getCurrentSubscriptionLevel(): string
-    {
-        return $this->subscription_level ?? 'free';
-    }
+    // // Subscription level helper
+    // public function getCurrentSubscriptionLevel(): string
+    // {
+    //     return $this->subscription_level ?? 'free';
+    // }
 
-    public function canAccessProduct($product): bool
-    {
-        $levels = ['free', 'basic', 'premium', 'vip'];
+    // public function canAccessProduct($product): bool
+    // {
+    //     $levels = ['free', 'basic', 'premium', 'vip'];
 
-        $userLevel = $this->getCurrentSubscriptionLevel();
-        $userIndex = array_search($userLevel, $levels, true);
-        $userIndex = $userIndex === false ? 0 : $userIndex;
+    //     $userLevel = $this->getCurrentSubscriptionLevel();
+    //     $userIndex = array_search($userLevel, $levels, true);
+    //     $userIndex = $userIndex === false ? 0 : $userIndex;
 
-        $productLevel = data_get($product, 'access_level', data_get($product, 'level', 'free'));
-        $productIndex = array_search($productLevel, $levels, true);
-        $productIndex = $productIndex === false ? 0 : $productIndex;
+    //     $productLevel = data_get($product, 'access_level', data_get($product, 'level', 'free'));
+    //     $productIndex = array_search($productLevel, $levels, true);
+    //     $productIndex = $productIndex === false ? 0 : $productIndex;
 
-        return $userIndex >= $productIndex;
-    }
+    //     return $userIndex >= $productIndex;
+    // }
 }
